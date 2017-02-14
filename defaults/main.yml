@@ -1,0 +1,4 @@
+---
+server_hostname: "paris"
+system_timezone: "/usr/share/zoneinfo/Europe/Bucharest"
+root_email_alias: "drupal@eaudeweb.ro"
