@@ -1,2 +1,4 @@
 ---
-# handlers file for production
+
+- name: restart sshd
+  service: name=sshd state=restarted

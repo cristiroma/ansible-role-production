@@ -36,7 +36,6 @@
     connect_timeout: 15
   when: ansible_selinux.status=="disabled"
 
-
 # Common system configuration tasks like setting hostname, timezone etc.
 - name: set hostname
   hostname: name={{ server_hostname }}
@@ -89,3 +88,43 @@
 
 - name: enhance password quality
   copy: src="files/pwquality.conf" dest="/etc/security/pwquality.conf"
+
+- name: enable wheel group
+  lineinfile:
+    dest: "/etc/sudoers"
+    regexp: "^%wheel"
+    line: "%wheel ALL=(ALL) NOPASSWD: ALL"
+    state: "present"
+
+- name: create system accounts
+  user: name="{{ item.username }}" comment="{{ item.comment }}"
+    group="{{ item.group }}" groups="{{ item.groups }}"
+    append="{{ item.append }}" shell="{{ item.shell }}"
+    state="{{ item.state }}"
+  with_items: "{{ users_system }}"
+
+- name: install openssh keys
+  authorized_key: user="{{ item.username }}" key="{{ item.key }}" state="{{ item.state }}"
+  with_items: "{{ sshd_authorized_keys }}"
+
+- name: Disallow older versions of the SSH protocol
+  lineinfile: dest=/etc/ssh/sshd_config
+          regexp="^Protocol"
+          line="Protocol 2"
+          state=present
+          insertafter="#Protocol 2"
+  notify: restart sshd
+
+- name: Disallow password authentication
+  lineinfile: dest=/etc/ssh/sshd_config
+          regexp="^PasswordAuthentication"
+          line="PasswordAuthentication no"
+          state=present
+  notify: restart sshd
+
+- name: Disallow root SSH access
+  lineinfile: dest=/etc/ssh/sshd_config
+          regexp="^PermitRootLogin"
+          line="PermitRootLogin no"
+          state=present
+  notify: restart sshd

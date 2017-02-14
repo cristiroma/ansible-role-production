@@ -2,3 +2,5 @@
 server_hostname: "paris"
 system_timezone: "/usr/share/zoneinfo/Europe/Bucharest"
 root_email_alias: "drupal@eaudeweb.ro"
+users_system: []
+sshd_authorized_keys: []
