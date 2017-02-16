@@ -84,6 +84,8 @@
     regexp: "^%wheel"
     line: "%wheel ALL=(ALL) NOPASSWD: ALL"
     state: "present"
+  tags:
+    - create_system_users
 
 - name: create system accounts
   user: name="{{ item.username }}" comment="{{ item.comment }}"
