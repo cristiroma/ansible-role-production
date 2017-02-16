@@ -2,16 +2,14 @@
 
 # Install and configure SELinux
 - name: install the libselinux-python package
-  yum: name=libselinux-python state=installed
-
-- name: install the libsemanage-python package
-  yum: name=libsemanage-python state=installed
+  yum: name="{{ item }}" state="installed"
+  with_items: [ 'libselinux-python', 'libsemanage-python' ]
 
 - name: Reload ansible_facts
   setup:
 
 - name: enable SELinux
-  selinux: policy=targeted state=enforcing
+  selinux: policy="targeted" state="enforcing"
   when: ansible_selinux.status=="disabled"
 
 - name: force relabel
@@ -38,56 +36,47 @@
 
 # Common system configuration tasks like setting hostname, timezone etc.
 - name: set hostname
-  hostname: name={{ server_hostname }}
+  hostname: name="{{ server_hostname }}"
 
 - name: update existing packages
-  yum: name=* state=latest
+  yum: name="*" state="latest"
 
 - name: install utils and libraries
-  yum: name={{ item }} state=present
+  yum: name="{{ item }}" state="present"
   with_items: [ ntp, screen, attr, bc, curl, bind-utils, bzip2, ftp, git, hdparm, latrace, lsof, mc , mtr, nano, nail, nc, iotop, net-tools, psmisc, rsync, strace, svn, tcpdump, telnet, traceroute, unzip, vim-common, vim-enhanced, wget, yum-utils, zip, wget ]
 
-# (redundant from selinux.yml) we install in case we need it
-- name: install the libselinux-python package
-  yum: name=libselinux-python state=installed
-
-# (redundant from selinux.yml) we install in case we need it
-- name: install the libsemanage-python package
-  yum: name=libsemanage-python state=installed
-
 - name: delete default system timezone
-  file:
-    path: /etc/localtime
-    state: absent
+  file: path="/etc/localtime" state="absent"
 
 - name: set system timezone
   file: src="{{ system_timezone }}" dest="/etc/localtime" state="link"
 
-- name: start ntpd daemon
-  service: name=ntpd state=started enabled=yes
-
 - name: enable crond
-  service: name=crond enabled=yes
+  service: name="crond" enabled="yes"
+
+- name: start ntpd daemon
+  service: name="ntpd" state="started" enabled="yes"
 
 - name: install postfix
-  yum: name=postfix state=present
+  yum: name="postfix" state="present"
 
 - name: start and enable postfix
-  service: name=postfix state=started enabled=yes
+  service: name="postfix" state="started" enabled="yes"
 
 # Redirect root mail to a valid address
 - name: remove old root from aliases
-  lineinfile: dest=/etc/aliases
-              regexp="^#root:"
-              state=absent
+  lineinfile: dest="/etc/aliases" regexp="^#root:" state="absent"
 
 - name: add root mail alias
-  lineinfile: dest=/etc/aliases
-              line="root{{':'}}   {{root_email_alias}}"
-              insertafter="# Person who should get root's mail"
+  lineinfile:
+    dest: "/etc/aliases"
+    line: "root{{':'}}   {{root_email_alias}}"
+    insertafter: "# Person who should get root's mail"
 
 - name: enhance password quality
-  copy: src="files/pwquality.conf" dest="/etc/security/pwquality.conf"
+  copy:
+    src: "files/pwquality.conf"
+    dest: "/etc/security/pwquality.conf"
 
 - name: enable wheel group
   lineinfile:
@@ -112,23 +101,26 @@
     - create_system_users
 
 - name: Disallow older versions of the SSH protocol
-  lineinfile: dest=/etc/ssh/sshd_config
-          regexp="^Protocol"
-          line="Protocol 2"
-          state=present
-          insertafter="#Protocol 2"
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^Protocol"
+    line: "Protocol 2"
+    state: "present"
+    insertafter: "#Protocol 2"
   notify: restart sshd
 
 - name: Disallow password authentication
-  lineinfile: dest=/etc/ssh/sshd_config
-          regexp="^PasswordAuthentication"
-          line="PasswordAuthentication no"
-          state=present
+  lineinfile:
+    dest: "/etc/ssh/sshd_config"
+    regexp: "^PasswordAuthentication"
+    line: "PasswordAuthentication no"
+    state: "present"
   notify: restart sshd
 
 - name: Disallow root SSH access
-  lineinfile: dest=/etc/ssh/sshd_config
-          regexp="^PermitRootLogin"
-          line="PermitRootLogin no"
-          state=present
+  lineinfile:
+    dest: "/etc/ssh/sshd_config"
+    regexp: "^PermitRootLogin"
+    line: "PermitRootLogin no"
+    state: "present"
   notify: restart sshd
