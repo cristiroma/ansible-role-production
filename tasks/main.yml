@@ -102,10 +102,14 @@
     append="{{ item.append }}" shell="{{ item.shell }}"
     state="{{ item.state }}"
   with_items: "{{ users_system }}"
+  tags:
+    - create_system_users
 
 - name: install openssh keys
   authorized_key: user="{{ item.username }}" key="{{ item.key }}" state="{{ item.state }}"
   with_items: "{{ sshd_authorized_keys }}"
+  tags:
+    - create_system_users
 
 - name: Disallow older versions of the SSH protocol
   lineinfile: dest=/etc/ssh/sshd_config

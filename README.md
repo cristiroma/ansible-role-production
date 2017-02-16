@@ -1,5 +1,5 @@
-Role Name
-=========
+Production
+==========
 
 Base CentOS setup for production purposes
 
@@ -39,6 +39,12 @@ Including an example of how to use your role (for instance, with variables passe
     - hosts: servers
       roles:
          - { role: cristiroma.production }
+```
+
+To setup a new account, and add SSH key to it you can run a tag, like:
+
+```
+ansible-playbook --tags="create_system_users" server.yml
 ```
 
 License
