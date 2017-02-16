@@ -1,6 +1,6 @@
 ---
-server_hostname: "paris"
+server_hostname: "centos"
 system_timezone: "/usr/share/zoneinfo/Europe/Bucharest"
-root_email_alias: "drupal@eaudeweb.ro"
+root_email_alias: "noc@company.com"
 users_system: []
 sshd_authorized_keys: []
