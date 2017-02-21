@@ -35,6 +35,9 @@
   when: ansible_selinux.status=="disabled"
 
 # Common system configuration tasks like setting hostname, timezone etc.
+- name: set root password
+  user: name="root" password="{{ system_root_password }}"
+
 - name: set hostname
   hostname: name="{{ server_hostname }}"
 
