@@ -88,16 +88,16 @@
     - create_system_users
 
 - name: create system accounts
-  user: name="{{ item.username }}" comment="{{ item.comment }}"
+  user: name="{{ item.username }}" comment="{{ item.comment|default('Created by Ansible deployment') }}"
     group="{{ item.group }}" groups="{{ item.groups }}"
-    append="{{ item.append }}" shell="{{ item.shell }}"
-    state="{{ item.state }}"
+    append="{{ item.append }}" shell="{{ item.shell|default('/bin/bash') }}"
+    state="{{ item.state|default('present') }}"
   with_items: "{{ users_system }}"
   tags:
     - create_system_users
 
 - name: install openssh keys
-  authorized_key: user="{{ item.username }}" key="{{ item.key }}" state="{{ item.state }}"
+  authorized_key: user="{{ item.username }}" key="{{ item.key }}" state="{{ item.state|default('present') }}"
   with_items: "{{ sshd_authorized_keys }}"
   tags:
     - create_system_users
