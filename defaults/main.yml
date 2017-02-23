@@ -5,3 +5,4 @@ system_timezone: "/usr/share/zoneinfo/Europe/Bucharest"
 root_email_alias: "noc@company.com"
 users_system: []
 sshd_authorized_keys: []
+motd_script: "/usr/local/bin/systemstats.sh"

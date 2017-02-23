@@ -66,6 +66,20 @@
 - name: start and enable postfix
   service: name="postfix" state="started" enabled="yes"
 
+- name: copy motd script
+  copy:
+    src: "files/systemstats.sh"
+    dest: "{{ motd_script }}"
+    mode: "755"
+
+- name: add motd script to cron
+  lineinfile:
+    dest: "/etc/crontab"
+    line: "*/5 * * * * root {{ motd_script }}"
+
+- name: generate motd
+  command: "{{ motd_script }}"
+
 # Redirect root mail to a valid address
 - name: remove old root from aliases
   lineinfile: dest="/etc/aliases" regexp="^#root:" state="absent"
