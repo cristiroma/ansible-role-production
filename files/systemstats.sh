@@ -32,4 +32,4 @@ Updated: `date`
 - Memory free (cache)       = `free -m | head -n 3 | tail -n 1 | awk {'print $3'}` Mb
 - Swap in use               = `free -m | tail -n 1 | awk {'print $3'}` Mb
 - Disk Usage                = Free $DISK_FREE_H of $DISK_TOTAL_H ($DISK_PERC %)
-"
+" > /etc/motd
